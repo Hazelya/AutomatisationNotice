@@ -6,9 +6,6 @@ import pandas as pd
 import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
-from docx.shared import Pt
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx import Document
 from weasyprint import HTML
 
 
