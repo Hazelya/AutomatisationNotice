@@ -1,6 +1,7 @@
-FROM python:3.11
+# Étape 1 : image Python avec libs nécessaires à WeasyPrint
+FROM python:3.11-slim
 
-# Installer les dépendances nécessaires pour WeasyPrint
+# Installation des dépendances système nécessaires pour WeasyPrint et les fonts
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpango-1.0-0 \
@@ -9,18 +10,21 @@ RUN apt-get update && apt-get install -y \
     libgdk-pixbuf2.0-0 \
     libffi-dev \
     libgobject-2.0-0 \
-    libglib2.0-0 \
+    fonts-liberation \
     curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean
 
+# Créer le dossier de travail
 WORKDIR /app
 
-COPY . .
+# Copier les fichiers
+COPY . /app
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Installer les dépendances Python
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Port utilisé par Streamlit
 EXPOSE 8501
 
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Lancer Streamlit
+CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
