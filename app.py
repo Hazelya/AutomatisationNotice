@@ -1,3 +1,4 @@
+import shutil
 import zipfile
 
 import streamlit as st
@@ -5,8 +6,8 @@ import pandas as pd
 import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
-import shutil
+from docx.shared import Pt
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx import Document
 
 # === Fonctions utilitaires ===
@@ -62,41 +63,82 @@ if st.button("Générer les notices"):
                 total_avant_call = df_nettoye['TOTAL APPELE'][i] - df_nettoye[call][i]
                 pourcentage_avant_call = (total_avant_call / df_nettoye['ENGAGEMENT'][i]) * 100
 
-                data = {
-                    'souscripteur' : df_nettoye["SOUSCRIPTEUR"][i],
-                    'pm_pp' : df_nettoye["TYPE"][i],
-                    'representant' : df_nettoye["Représentant"][i],
-                    'adresse' : df_nettoye["ADRESSE"][i],
-                    'code_postal' : round(df_nettoye["CP"][i]),
-                    'ville' : df_nettoye["VILLE"][i],
-                    'pays' : pays,
-                    'date' : date_now(),
-                    'numero_call' : numero_call,
-                    'date_call' : date_call.strftime('%d/%m/%Y'),
-                    'nom_fond' : nom_fond,
-                    'montant_total' : format_nombre(montant_total),
-                    'pourcentage_call' : f"{pourcentage_call * 100:.2f}",
-                    'montant_a_liberer' : format_nombre(df_nettoye[call][i]),
-                    'pourcentage_avant_call' : format_nombre(pourcentage_avant_call),
-                    'texte_fond_couvrir' : texte_fond_couvrir,
-                    'texte_fond_finance' : texte_fond_finance,
-                    'montant_engagement_initial' : format_nombre(df_nettoye["ENGAGEMENT"][i]),
-                    'nombre_parts_souscrites' : format_nombre(df_nettoye["NBR PARTS"][i]),
-                    'categorie_part' : df_nettoye["PART"][i],
-                    'total_appele' : format_nombre(df_nettoye["TOTAL APPELE"][i]),
-                    'pourcent_liberation' : f"{df_nettoye['%LIBERATION'][i] * 100:.2f}",
-                    'residuel' : format_nombre(df_nettoye["RESIDUEL"][i]),
-                    'libelle_virement' : 'CR '+df_nettoye["SOUSCRIPTEUR"][i]+' ADF '+numero_call
-                }
+                doc = Document()
 
-                html_content = template.render(data)
+                # Adresse
+                doc.add_paragraph(f"{df_nettoye['souscripteur']}")
+                if df_nettoye['pm_pp'].lower() == "pm":
+                    doc.add_paragraph(f"{df_nettoye['representant']} (Représentant légal)")
+                doc.add_paragraph(df_nettoye['adresse'])
+                doc.add_paragraph(f"{df_nettoye['code_postal']} {df_nettoye['ville']}")
+                doc.add_paragraph(df_nettoye['pays'])
+                doc.add_paragraph("")
 
-                html_file = f"Output_HTML/{data['souscripteur']}.html"
-                with open(html_file, 'w', encoding='utf-8') as f:
-                    f.write(html_content)
+                # Date et lieu
+                para = doc.add_paragraph(f"{df_nettoye['ville']}, le {df_nettoye['date']}")
+                para.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+                doc.add_paragraph("")
 
-                # On change de méthodes car pas pris en compte par steamlit
-                HTML(html_file).write_pdf(pdf_file)
+                # Objet
+                doc.add_paragraph(
+                    f"Objet : {df_nettoye['nom_fond']} – Appel de Fonds N°{df_nettoye['numero_call']} – Date valeur : {df_nettoye['date_call']}",
+                    style='Intense Quote')
+                doc.add_paragraph("")
+
+                # Corps de la lettre
+                doc.add_paragraph("Cher Investisseur,")
+                doc.add_paragraph(
+                    f"\nDans le cadre de votre souscription dans le {df_nettoye['nom_fond']}, nous vous informons de l’Appel de Fonds N°{df_nettoye['numero_call']}, en date valeur du {df_nettoye['date_call']}, pour un montant total de {df_nettoye['montant_total']} € (soit {df_nettoye['pourcentage_call']} % du Montant Total des Souscriptions), soit pour votre quote-part un montant total de {df_nettoye['montant_a_liberer']} €.\n")
+
+                doc.add_paragraph(
+                    f"L’Appel de Fonds précédent avait porté votre engagement appelé à {df_nettoye['pourcentage_avant_call']} % du montant total auquel vous aviez souscrit. {df_nettoye['texte_fond_couvrir']} A ce jour, les montants libérés lors de la souscription initiale et des précédents appels ont été investis, dépensés ou engagés à 100 %.\n")
+
+                doc.add_paragraph(
+                    f"Ainsi, conformément à l’article 9.2.2 du Règlement du Fonds, nous vous remercions de bien vouloir procéder au versement de la somme mentionnée selon les modalités indiquées dans la page suivante.\n")
+
+                doc.add_paragraph(f"{df_nettoye['texte_fond_finance']}\n")
+
+                doc.add_paragraph(
+                    "Nous vous remercions par avance et vous prions de croire, Cher Investisseur, en l’expression de notre considération distinguée.\n")
+                doc.add_paragraph("L’équipe Middle Office\nÉpopée Gestion")
+
+                # Page suivante
+                doc.add_page_break()
+
+                # Détails financiers
+                doc.add_heading(f"{df_nettoye['nom_fond']} – Appel de Fonds N°{df_nettoye['numero_call']}", level=1)
+                doc.add_paragraph("Détail de l’opération :")
+                doc.add_paragraph(f"% de l’Appel de Fonds : {df_nettoye['pourcentage_call']} %")
+                doc.add_paragraph(f"Montant à libérer : {df_nettoye['montant_a_liberer']} €")
+                doc.add_paragraph(f"Date d’opération et de valeur, au plus tard le : {df_nettoye['date_call']}")
+                doc.add_paragraph("")
+
+                doc.add_paragraph("Situation après cette opération :")
+                doc.add_paragraph(f"Montant de l’engagement initial : {df_nettoye['montant_engagement_initial']} €")
+                doc.add_paragraph(
+                    f"Nombre de Parts {df_nettoye['categorie_part']} souscrites : {df_nettoye['nombre_parts_souscrites']}")
+                doc.add_paragraph(f"Capital appelé à date* : {df_nettoye['total_appele']} €")
+                doc.add_paragraph(f"% de l’engagement appelé à date* : {df_nettoye['pourcent_liberation']} %")
+                doc.add_paragraph(f"Montant restant à appeler* : {df_nettoye['residuel']} €")
+                doc.add_paragraph("*Incluant l’Appel de Fonds en cours")
+                doc.add_paragraph("")
+
+                doc.add_paragraph(
+                    "Veuillez procéder au paiement en €, net de tous frais bancaires, par virement bancaire sur le compte, selon les instructions suivantes :")
+
+                doc.add_paragraph("Titulaire du compte : XPLORE II")
+                doc.add_paragraph("Domiciliation : CACEIS BANK FRANCE")
+                doc.add_paragraph("IBAN : FR76 1812 9000 1000 5002 0849 481")
+                doc.add_paragraph("BIC (ADRESSE SWIFT) : ISAEFRPPXXX")
+                doc.add_paragraph(f"Libellé du virement : {df_nettoye['libelle_virement']}")
+                doc.add_paragraph("Frais pour le bénéficiaire : N/A (SHA)")
+                doc.add_paragraph("")
+
+                doc.add_paragraph("L’équipe Middle Office\nÉpopée Gestion")
+
+                # Enregistrement du fichier
+                docx_path = f"Output/{df_nettoye['souscripteur']}.docx"
+                doc.save(docx_path)
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
