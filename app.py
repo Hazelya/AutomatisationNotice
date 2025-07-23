@@ -30,7 +30,7 @@ texte_fond_finance = "Cet Appel de Fonds est destiné à financer notre investis
 # ============== Ouverture du fichier excel ===============
 
 # Chemin du fichier Excel
-chemin_fichier = 'Data/Base-data-test-fund-exercice.xlsx'
+chemin_fichier = 'ressources/Base-data-test-fund-exercice.xlsx'
 
 try:
     # Lit le fichier Excel et crée un DataFrame
@@ -60,7 +60,7 @@ except Exception as e:
 
 # ============== Ouverture du modele (HTML) ===============
 
-dir = 'Data'
+dir = 'ressources'
 env = Environment(loader=FileSystemLoader(dir))
 template = env.get_template('model_notice_final.html')
 
