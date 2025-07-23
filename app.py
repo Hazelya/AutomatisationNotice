@@ -1,10 +1,13 @@
+import zipfile
+
 import streamlit as st
 import pandas as pd
 import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
+#from weasyprint import HTML
 import shutil
+from docx import Document
 
 # === Fonctions utilitaires ===
 def date_now():
@@ -15,6 +18,7 @@ def date_now():
 
 def format_nombre(nombre):
     return f"{nombre:,.2f}".replace(',', ' ').replace('.', ',')
+
 
 # === Interface Streamlit ===
 st.title("Générateur de notices d'appel de fonds")
@@ -88,10 +92,20 @@ if st.button("Générer les notices"):
                 html_content = template.render(data)
 
                 html_file = f"Output_HTML/{data['souscripteur']}.html"
-                pdf_file = f"Output/{data['souscripteur']}.pdf"
                 with open(html_file, 'w', encoding='utf-8') as f:
                     f.write(html_content)
-                HTML(html_file).write_pdf(pdf_file)
+
+                # On change de méthodes car pas pris en compte par steamlit
+                # HTML(html_file).write_pdf(pdf_file)
+
+                # Créer un document Word
+                doc = Document()
+                doc.add_heading("Notice d'appel de fonds", 0)
+                doc.add_paragraph("Ceci est un exemple de notice générée automatiquement.")
+
+                # Enregistrer le document
+                docx_path = f"Output/{data['souscripteur']}.docx"
+                doc.save(docx_path)
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
