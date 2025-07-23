@@ -1,9 +1,9 @@
-FROM python:3.11-slim
+FROM python:3.11
 
-# Installer les dépendances système pour WeasyPrint
+# Installer les dépendances nécessaires pour WeasyPrint
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libpango1.0-0 \
+    libpango-1.0-0 \
     libpangocairo-1.0-0 \
     libcairo2 \
     libgdk-pixbuf2.0-0 \
@@ -15,9 +15,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
 COPY . .
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-EXPOSE 8000
-CMD ["streamlit", "run", "app.py", "--server.port=8000", "--server.address=0.0.0.0"]
+EXPOSE 8501
+
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
