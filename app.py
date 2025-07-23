@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
-#from weasyprint import HTML
+from weasyprint import HTML
 import shutil
 from docx import Document
 
@@ -96,16 +96,7 @@ if st.button("Générer les notices"):
                     f.write(html_content)
 
                 # On change de méthodes car pas pris en compte par steamlit
-                # HTML(html_file).write_pdf(pdf_file)
-
-                # Créer un document Word
-                doc = Document()
-                doc.add_heading("Notice d'appel de fonds", 0)
-                doc.add_paragraph("Ceci est un exemple de notice générée automatiquement.")
-
-                # Enregistrer le document
-                docx_path = f"Output/{data['souscripteur']}.docx"
-                doc.save(docx_path)
+                HTML(html_file).write_pdf(pdf_file)
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
