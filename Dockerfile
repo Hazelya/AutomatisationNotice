@@ -3,14 +3,17 @@ FROM python:3.11-slim
 # Installer les dépendances système nécessaires à WeasyPrint
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libpango-1.0-0 \
+    libpango1.0-0 \
     libpangocairo-1.0-0 \
     libcairo2 \
     libgdk-pixbuf2.0-0 \
     libffi-dev \
     libgobject-2.0-0 \
+    libglib2.0-0 \
+    libssl-dev \
     curl \
-    && apt-get clean
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Définir le répertoire de travail
 WORKDIR /app
