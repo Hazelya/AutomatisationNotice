@@ -6,3 +6,4 @@ python-docx
 openpyxl
 fastapi
 uvicorn
+pathlib

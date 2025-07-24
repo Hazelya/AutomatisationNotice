@@ -1,6 +1,6 @@
 import shutil
 import zipfile
-
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 import os
@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
 
-# === Fonctions utilitaires ===
+# === Fonctions utiles ===
 def date_now():
     mois = ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
             'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
@@ -53,7 +53,7 @@ if st.button("Générer les notices"):
 
             dir = 'ressources'
             env = Environment(loader=FileSystemLoader(dir))
-            template = env.get_template('model_notice_final.html')
+            template = env.get_template('model_notice_img.html')
 
             os.makedirs('Output', exist_ok=True)
             os.makedirs('Output_HTML', exist_ok=True)
@@ -61,12 +61,18 @@ if st.button("Générer les notices"):
             for i in range(df_nettoye.shape[0]):
                 total_avant_call = df_nettoye['TOTAL APPELE'][i] - df_nettoye[call][i]
                 pourcentage_avant_call = (total_avant_call / df_nettoye['ENGAGEMENT'][i]) * 100
+
+                if pd.isna(df_nettoye["Représentant"][i]):
+                    representant = ''
+                else:
+                    representant = df_nettoye["Représentant"][i]
+
                 # Les données à injecter
                 # 'balise' : 'la donnée',
                 data = {
                     'souscripteur': df_nettoye["SOUSCRIPTEUR"][i],
                     'pm_pp': df_nettoye["TYPE"][i],
-                    'representant': df_nettoye["Représentant"][i],
+                    'representant': representant,
                     'adresse': df_nettoye["ADRESSE"][i],
                     'code_postal': round(df_nettoye["CP"][i]),
                     'ville': df_nettoye["VILLE"][i],
@@ -95,16 +101,18 @@ if st.button("Générer les notices"):
 
                 # Sauve le résultat dans un fichier
                 os.makedirs('Output_HTML', exist_ok=True)
-                dir_nom_fichier = 'Output_HTML/' + df_nettoye["SOUSCRIPTEUR"][i] + '.html'
+                dir_nom_fichier = 'Output_HTML/' + df_nettoye["SOUSCRIPTEUR"][i] + '_' + df_nettoye["PART"][i] + '.html'
                 with open(dir_nom_fichier, 'w', encoding='utf-8') as file:
                     file.write(html_content)
 
                 # print('Notice HTML générée avec succès.')
 
-                fichier_html = 'Output_HTML/' + df_nettoye["SOUSCRIPTEUR"][i] + '.html'
-                fichier_pdf = 'Output/' + df_nettoye["SOUSCRIPTEUR"][i] + '.pdf'
-                HTML(fichier_html).write_pdf(fichier_pdf)
+                fichier_html = 'Output_HTML/' + df_nettoye["SOUSCRIPTEUR"][i] + '_' + df_nettoye["PART"][i] + '.html'
+                fichier_pdf = 'Output/' + df_nettoye["SOUSCRIPTEUR"][i] + '_' + df_nettoye["PART"][i] + '.pdf'
 
+                base_url = Path('ressources/images').resolve()  # Chemin absolu vers /ressources
+
+                HTML(filename=fichier_html, base_url=base_url.as_uri()).write_pdf(fichier_pdf)
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
