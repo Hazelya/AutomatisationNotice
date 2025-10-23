@@ -7,6 +7,7 @@ import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
+from docx import Document
 
 
 # === Fonctions utiles ===
@@ -40,7 +41,7 @@ if st.button("Générer les notices"):
             f.write(uploaded_file.getbuffer())
 
         try:
-            df = pd.read_excel(chemin_fichier, sheet_name='SOUSCRIPTEURS', header=18)
+            df = pd.read_excel(chemin_fichier, sheet_name='SOUSCRIPTEURS', header=18) # Header a modifier si besoin
             df_nettoye = df[df['SOUSCRIPTEUR'].notna()]
             df_nettoye = df_nettoye[~df_nettoye['SOUSCRIPTEUR'].str.startswith('TOTAL', na=False)]
             df_nettoye = df_nettoye.reset_index(drop=True)
@@ -113,6 +114,18 @@ if st.button("Générer les notices"):
                 base_url = Path('ressources/images').resolve()  # Chemin absolu vers /ressources
 
                 HTML(filename=fichier_html, base_url=base_url.as_uri()).write_pdf(fichier_pdf)
+
+                # Génération DOCX
+                fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
+
+                # Exemple simple pour le docx : on extrait le texte brut du HTML (tu peux adapter)
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(html_content, 'html.parser')
+                texte = soup.get_text(separator='\n').strip()
+
+                document = Document()
+                document.add_paragraph(texte)
+                document.save(fichier_word)
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
