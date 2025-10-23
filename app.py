@@ -109,18 +109,18 @@ if st.button("Générer les notices"):
 
                 # print('Notice HTML générée avec succès.')
 
-                # os.makedirs('Output/PDF', exist_ok=True)
-                # os.makedirs('Output/Word', exist_ok=True)
+                os.makedirs('Output/PDF', exist_ok=True)
+                os.makedirs('Output/Word', exist_ok=True)
 
                 fichier_html = 'Output_HTML/' + df_nettoye["SOUSCRIPTEUR"][i] + '_' + df_nettoye["PART"][i] + '.html'
-                fichier_pdf = 'Output/' + df_nettoye["SOUSCRIPTEUR"][i] + '_' + df_nettoye["PART"][i] + '.pdf'
+                fichier_pdf = 'Output/PDF/' + df_nettoye["SOUSCRIPTEUR"][i] + '_' + df_nettoye["PART"][i] + '.pdf'
 
                 base_url = Path('ressources/images').resolve()  # Chemin absolu vers /ressources
 
                 HTML(filename=fichier_html, base_url=base_url.as_uri()).write_pdf(fichier_pdf)
 
                 # Génération DOCX
-                fichier_word = f'Output/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
+                fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
                 # Exemple simple pour le docx : on extrait le texte brut du HTML (tu peux adapter)
                 soup = BeautifulSoup(html_content, 'html.parser')
