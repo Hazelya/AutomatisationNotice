@@ -8,6 +8,7 @@ import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 from docx import Document
+from bs4 import BeautifulSoup
 
 
 # === Fonctions utiles ===
@@ -119,7 +120,6 @@ if st.button("Générer les notices"):
                 fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
                 # Exemple simple pour le docx : on extrait le texte brut du HTML (tu peux adapter)
-                from bs4 import BeautifulSoup
                 soup = BeautifulSoup(html_content, 'html.parser')
                 texte = soup.get_text(separator='\n').strip()
 
