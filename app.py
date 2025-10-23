@@ -117,7 +117,7 @@ if st.button("Générer les notices"):
                 HTML(filename=fichier_html, base_url=base_url.as_uri()).write_pdf(fichier_pdf)
 
                 # Génération DOCX
-                fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
+                fichier_word = f'Output/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
                 # Exemple simple pour le docx : on extrait le texte brut du HTML (tu peux adapter)
                 soup = BeautifulSoup(html_content, 'html.parser')
