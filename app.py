@@ -7,8 +7,8 @@ import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
-from docx import Document
-from bs4 import BeautifulSoup
+from spire.pdf.common import * 
+from spire.pdf import * 
 
 
 # === Fonctions utiles ===
@@ -20,6 +20,7 @@ def date_now():
 
 def format_nombre(nombre):
     return f"{nombre:,.2f}".replace(',', ' ').replace('.', ',')
+
 
 
 # === Interface Streamlit ===
@@ -122,13 +123,13 @@ if st.button("Générer les notices"):
                 # Génération DOCX
                 fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
-                # Exemple simple pour le docx : on extrait le texte brut du HTML (tu peux adapter)
-                soup = BeautifulSoup(html_content, 'html.parser')
-                texte = soup.get_text(separator='\n').strip()
-
-                document = Document()
-                document.add_paragraph(texte)
-                document.save(fichier_word)
+                pdf = PdfDocument() 
+                # Charger un fichier PDF 
+                pdf.LoadFromFile(fichier_pdf) 
+                # Convertir le fichier PDF en fichier Word DOCX 
+                pdf.SaveToFile(fichier_word, FileFormat.DOCX) 
+                # Fermer l'objet PdfDocument 
+                pdf.Close()
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")

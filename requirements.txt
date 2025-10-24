@@ -7,5 +7,4 @@ openpyxl
 fastapi
 uvicorn
 pathlib
-docx
-bs4
+spire
