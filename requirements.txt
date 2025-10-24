@@ -4,7 +4,7 @@ openpyxl==3.1.5
 Jinja2==3.1.4
 
 # PDF generation
-weasyprint==61.2
+weasyprint
 
 # Word document generation
 python-docx==1.1.2
@@ -21,3 +21,4 @@ beautifulsoup4==4.12.3
 lxml==5.3.0
 
 docx
+pdf2docx

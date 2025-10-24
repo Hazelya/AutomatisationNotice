@@ -7,8 +7,8 @@ import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
-from docx import Document
-from bs4 import BeautifulSoup
+
+from pdf2docx import Converter
 
 
 # === Fonctions utiles ===
@@ -122,13 +122,12 @@ if st.button("Générer les notices"):
                 # Génération DOCX
                 fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
-                # Exemple simple pour le docx : on extrait le texte brut du HTML (tu peux adapter)
-                soup = BeautifulSoup(html_content, 'html.parser')
-                texte = soup.get_text(separator='\n').strip()
+                # Create a Converter object
+                cv = Converter(fichier_pdf)
 
-                document = Document()
-                document.add_paragraph(texte)
-                document.save(fichier_word)
+                # Convert specified PDF page to docx 
+                cv.convert(fichier_word, start=0, end=None)
+                cv.close()
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
