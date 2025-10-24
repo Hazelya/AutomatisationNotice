@@ -1,11 +1,25 @@
-pandas~=2.2.3
-Jinja2~=3.1.4
-weasyprint~=65.1
-streamlit~=1.47.0
-python-docx
-openpyxl
-fastapi
-uvicorn
-pathlib
-spire.pdf.common
-spire.pdf
+openpyxl==3.1.5
+
+# Template engine
+Jinja2==3.1.4
+
+# PDF generation
+weasyprint==65.1
+
+# Word document generation
+python-docx==1.1.2
+
+# Web interface
+streamlit==1.47.0
+
+# API (si nécessaire)
+fastapi==0.115.4
+uvicorn[standard]==0.32.0
+
+# HTML parsing
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# Spire PDF (bibliothèque commerciale - vérifiez si vraiment nécessaire)
+spire.pdf==10.12.0
+spire.pdf.common==10.12.0
