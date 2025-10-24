@@ -7,4 +7,5 @@ openpyxl
 fastapi
 uvicorn
 pathlib
-spire
+spire.pdf.common
+spire.pdf
