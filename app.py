@@ -7,8 +7,7 @@ import os
 import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
-from spire.pdf.common import * 
-from spire.pdf import * 
+from pdf2docx import Converter
 
 
 # === Fonctions utiles ===
@@ -123,13 +122,12 @@ if st.button("Générer les notices"):
                 # Génération DOCX
                 fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
-                pdf = PdfDocument() 
-                # Charger un fichier PDF 
-                pdf.LoadFromFile(fichier_pdf) 
-                # Convertir le fichier PDF en fichier Word DOCX 
-                pdf.SaveToFile(fichier_word, FileFormat.DOCX) 
-                # Fermer l'objet PdfDocument 
-                pdf.Close()
+                # Create a Converter object
+                cv = Converter(fichier_pdf)
+
+                # Convert specified PDF page to docx 
+                cv.convert(fichier_word, start=0, end=None)
+                cv.close()
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
