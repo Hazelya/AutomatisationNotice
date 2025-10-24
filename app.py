@@ -126,7 +126,7 @@ if st.button("Générer les notices"):
                 cv = Converter(fichier_pdf)
 
                 # Convert specified PDF page to docx 
-                cv.convert(fichier_word, start=0, end=None)
+                cv.convert(fichier_word)
                 cv.close()
 
             # Zip tous les fichiers
