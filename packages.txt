@@ -1,13 +1,6 @@
-tesseract
-poppler
-libpango-1.0-0
-libpangoft2-1.0-0
-libcairo2
 libcairo2-dev
+libpango1.0-dev
+libpangocairo-1.0-0
+libgdk-pixbuf2.0-dev
 libffi-dev
-libgdk-pixbuf2.0-0
-libxml2
-libxslt1.1
-libglib2.0-0
-fonts-liberation
-libharfbuzz0b
+shared-mime-info
