@@ -120,14 +120,14 @@ if st.button("Générer les notices"):
                 HTML(filename=fichier_html, base_url=base_url.as_uri()).write_pdf(fichier_pdf)
 
                 # Génération DOCX
-                fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
+                # fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
                 # Create a Converter object
-                cv = Converter(fichier_pdf)
+                # cv = Converter(fichier_pdf)
 
                 # Convert specified PDF page to docx 
-                cv.convert(fichier_word, start=0, end=None)
-                cv.close()
+                # cv.convert(fichier_word, start=0, end=None)
+                # cv.close()
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
