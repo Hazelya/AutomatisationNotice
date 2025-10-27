@@ -8,7 +8,7 @@ import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
-from pdf2docx import Converter
+# from pdf2docx import Converter
 
 
 # === Fonctions utiles ===
