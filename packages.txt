@@ -4,3 +4,5 @@ libpangocairo-1.0-0
 libgdk-pixbuf2.0-dev
 libffi-dev
 shared-mime-info
+tesseract
+poppler
