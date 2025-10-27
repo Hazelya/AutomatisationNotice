@@ -8,6 +8,10 @@ import datetime as dt
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
+from pdf2image import convert_from_bytes
+from pytesseract import image_to_string
+from docx import Document
+
 # from pdf2docx import Converter
 
 
@@ -120,7 +124,7 @@ if st.button("Générer les notices"):
                 HTML(filename=fichier_html, base_url=base_url.as_uri()).write_pdf(fichier_pdf)
 
                 # Génération DOCX
-                # fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
+                fichier_word = f'Output/Word/{df_nettoye["SOUSCRIPTEUR"][i]}_{df_nettoye["PART"][i]}.docx'
 
                 # Create a Converter object
                 # cv = Converter(fichier_pdf)
@@ -128,6 +132,18 @@ if st.button("Générer les notices"):
                 # Convert specified PDF page to docx 
                 # cv.convert(fichier_word, start=0, end=None)
                 # cv.close()
+
+                pdf = convert_from_bytes(fichier_pdf.read())
+
+                doc = Document()
+                total_pages = len(pdf)
+                
+                for i, img in enumerate(pdf, start=1):
+                    # st.write(f"🔍 Lecture de la page {i}/{total_pages}...")
+                    text = image_to_string(pdf, lang='fra')  # ou 'eng' pour anglais
+                    doc.add_paragraph(text)
+
+                doc.save(fichier_word)
 
             # Zip tous les fichiers
             shutil.make_archive("notices", "zip", "Output")
